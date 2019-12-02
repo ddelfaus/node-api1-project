@@ -18,6 +18,8 @@ server.get('/', (req, res) =>{
     res.send({ api: "up and running.."})
 })
 
+
+
 server.get('/api/users', (req, res) => {
     db.find()
 
@@ -31,6 +33,27 @@ server.get('/api/users', (req, res) => {
 
     })
 })
+
+
+
+server.get('/api/users/:id', (req, res) => {
+    const id = req.params.id;
+
+    db
+    .findById(id)
+
+    .then(user => {
+        if(user){
+            res.status(200).json(user)
+        }
+        res.status(404).json({ error: "The user with the specified ID does not exist."})
+    })
+    .catch(error => {
+        res.status(500).json({error: "The user information could not be retrieved"})
+    })
+
+})
+
 
 
 // post request 
@@ -54,6 +77,27 @@ server.post('/api/users', (req, res) => {
     })
 })
 
+
+
+// delete request
+
+server.delete("/api/users/:id", (req, res) => {
+    const id = req.params.id;
+
+    db
+    .remove(id)
+    .then(removed => {
+        if (removed) {
+            res.status(200).json({ message: "user was removed", removed})
+        }else{
+            res.status(404).json({ message: "user not found"})
+        }
+    })
+    .catch(error => {
+        console.log("error on delete /users/:id", error);
+        res.status(500).json({ errorMessage: "error removing the user"})
+    })
+})
 
 const port = 4000
 server.listen(port, () => console.log(`\n API running on port ${port}##\n`))
