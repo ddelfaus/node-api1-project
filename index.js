@@ -61,7 +61,7 @@ server.get('/api/users/:id', (req, res) => {
 server.post('/api/users', (req, res) => {
     const {name, bio} = req.body;
 
-    if(!name || !bio){
+    if(!name && !bio){
         res.status(400).json({error: "Please provide name and bio for the user."})
     }
 
@@ -98,6 +98,31 @@ server.delete("/api/users/:id", (req, res) => {
         res.status(500).json({ errorMessage: "error removing the user"})
     })
 })
+
+// Put request 
+
+server.put('/api/users/:id', (req , res)=> {
+    const id = req.params.id;
+    const { name,bio} = req.body;
+    
+    
+    if(!name && !bio){
+        res.status(400).json({error: "Please provide name and bio for the user."})
+    }
+
+    db
+    .update(id, {name,bio})
+
+    .then(user => {
+        res.status(201).json(`User ${id} has been updated name: ${name} and bio: ${bio}`);
+    })
+    .catch(error => {
+        console.log("error with post", error);
+        res.status(500).json({errorMessage: "User information could not be modified"})
+    })
+})
+
+
 
 const port = 4000
 server.listen(port, () => console.log(`\n API running on port ${port}##\n`))
